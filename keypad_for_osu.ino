@@ -22,7 +22,7 @@ void loop(){
   if(left_click == LOW){
     Keyboard.press(90); // code ASCII 90 = Z
   }
-  else if(right_click  == LOW){
+  else if(right_click == LOW){
     Keyboard.press(88); // code ASCII 88 = X
   }
   else{
