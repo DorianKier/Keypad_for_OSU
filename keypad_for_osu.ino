@@ -1,31 +1,41 @@
-/* Keypad do gry OSU! */
-/* Kod pisany dla płytki Arduino Leonardo Pro Micro.
-z wykorzystaniem switchy Cherry MX Red/Blue.
-Piny podłączoe w sposób taki:
-GND = GND,
-Lewy przcisk = 6 pin,
-Prawy przycisk = 8 pin,
-Autor kodu: Dorian Kiewro*/
+#include <Keypad.h>
 #include <Keyboard.h>
 
-// zmienne przypisujące lewy przcisk do pinu 6 oraz prawy przycisk do pinu 8
-#define left_click digitalRead(6)
-#define right_click digitalRead(8)
+#define NUMROWS 1
+#define NUMCOLS 2
 
-void setup(){
-  pinMode(6, INPUT_PULLUP);
-  pinMode(8, INPUT_PULLUP);
+byte buttons[NUMROWS][NUMCOLS] = {
+  { 88, 90 }
+};
+
+byte pinRows[NUMROWS] = { 18 };
+byte pinCols[NUMCOLS] = { 19, 20 };
+
+Keypad buttOSU = Keypad(makeKeymap(buttons), pinRows, pinCols, NUMROWS, NUMCOLS);
+
+void setup() {
   Keyboard.begin();
 }
 
-void loop(){
-  if(left_click == LOW){
-    Keyboard.press(90); // code ASCII 90 = Z
-  }
-  else if(right_click == LOW){
-    Keyboard.press(88); // code ASCII 88 = X
-  }
-  else{
-    Keyboard.releaseAll(); // puszczanie przycisków
+void loop() {
+  CheckButtons();
+}
+
+void CheckButtons(void) {
+  if(buttOSU.getKeys()){
+    for(int i=0; i<LIST_MAX; i++){
+      if(buttOSU.key[i].stateChanged){
+        switch(buttOSU.key[i].kstate){
+          case PRESSED:
+          case HOLD:
+            Keyboard.press(buttOSU.key[i].kchar);
+            break;
+          case RELEASED:
+          case IDLE:
+            Keyboard.release(buttOSU.key[i].kchar);
+            break;
+        }
+      }
+    }
   }
 }
